@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calcolatore di Probabilità per Goal/No Goal</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url('01.jpg'); /* Sostituisci 'url-dell-immagine.jpg' con l'URL dell'immagine desiderata */
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        height: 100vh; /* Imposta l'altezza al 100% dell'altezza del viewport (schermo) */
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: Transparent;
+        border-radius: 5px;
+        box-shadow: Transparent;
+    }
+
+    .image-left {
+        width: 20%;
+        float: left;
+        margin-right: 5%;
+    }
+
+    .content {
+        float: left;
+        width: 60%;
+    }
+
+    .image-right {
+        width: 20%;
+        float: right;
+        margin-left: 5%;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin: 10px 0;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    button {
+        background-color: #007BFF;
+        color: #fff;
+        padding: 10px 20px;
+        margin: 10px 150px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    p {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 18px;
+    }
+</style>
+
+
+
+</head>
+<body>
+    <div class="container">
+        <div class="image-left">
+            <img src="01-removebg-preview.png" >
+        </div>
+
+        <div class="content">
+            <h1>Calcolatore di Probabilità per Goal/No Goal</h1>
+
+            <label for="averageGoalsCasaFatti">Media Gol Casa Fatti:</label>
+            <input type="number" id="averageGoalsCasaFatti" step="0.01">
+            
+            <label for="averageGoalsCasaSubiti">Media Gol Casa Subiti:</label>
+            <input type="number" id="averageGoalsCasaSubiti" step="0.01">
+            
+            <label for="averageGoalsTrasfertaFatti">Media Gol Trasferta Fatti:</label>
+            <input type="number" id="averageGoalsTrasfertaFatti" step="0.01">
+            
+            <label for="averageGoalsTrasfertaSubiti">Media Gol Trasferta Subiti:</label>
+            <input type="number" id="averageGoalsTrasfertaSubiti" step="0.01">
+            
+            <button onclick="calcolaProbabilita()">Calcola Probabilità</button>
+            
+            <p>Probabilità che entrambe le squadre segnano almeno un goal: <span id="probabilitaGoalNoGoal"></span>%</p>
+        </div>
+
+        <div class="image-right">
+            <img src="01-removebg-preview.png" alt="Immagine a destra">
+        </div>
+    </div>
+    
+    <script>
+        function PoissonProbability(x, lambda) {
+            return (Math.exp(-lambda) * Math.pow(lambda, x)) / factorial(x);
+        }
+
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function calcolaProbabilita() {
+            const averageGoalsCasaFatti = parseFloat(document.getElementById("averageGoalsCasaFatti").value);
+            const averageGoalsCasaSubiti = parseFloat(document.getElementById("averageGoalsCasaSubiti").value);
+            const averageGoalsTrasfertaFatti = parseFloat(document.getElementById("averageGoalsTrasfertaFatti").value);
+            const averageGoalsTrasfertaSubiti = parseFloat(document.getElementById("averageGoalsTrasfertaSubiti").value);
+
+            const A = (averageGoalsCasaFatti + averageGoalsTrasfertaSubiti) / 2.0;
+            const B = (averageGoalsTrasfertaFatti + averageGoalsCasaSubiti) / 2.0;
+
+            let goalNoGoalProbability = 0.0;
+
+            for (let x = 1; x <= 6; x++) {
+                for (let y = 1; y <= 6; y++) {
+                    let probA = PoissonProbability(x, A);
+                    let probB = PoissonProbability(y, B);
+                    goalNoGoalProbability += probA * probB;
+                }
+            }
+
+            // Converti la probabilità in percentuale tradizionale
+            let goalNoGoalPercentage = goalNoGoalProbability * 100;
+
+            document.getElementById("probabilitaGoalNoGoal").textContent = goalNoGoalPercentage.toFixed(2) + "%";
+        }
+    </script>
+</body>
+</html>
